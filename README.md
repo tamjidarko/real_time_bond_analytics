@@ -49,8 +49,6 @@ Credit spreads measure the extra yield over Treasuries that investors demand for
 
 ### Treasury Yield Curve
 
-![Yield Curve]
-
 * Short end (1M–6M): elevated rates (\~4.0–4.4%).
 * 2Y at 3.62%, 10Y at 4.22%, 30Y at 4.88%.
 * **2s10s spread:** +60bp → suggests steepening relative to historical inversions.
