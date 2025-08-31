@@ -1,6 +1,3 @@
-Here’s a draft of a clear, professional **GitHub README** you can use for your project. It’s structured, uses markdown properly, and balances both the technical and conceptual explanations.
-
----
 
 # Bond Analytics with Real-Time Market Data
 
