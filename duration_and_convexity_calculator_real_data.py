@@ -656,28 +656,84 @@ def main():
                 print(f"  10Y Rate: {market_data.treasury_curve['10Y']*100:.3f}%")
                 print(f"  2s10s Spread: {curve_2_10:.0f}bp")
                 
-                if curve_2_10 > 100:
-                    print("  Signal: Steep curve - consider steepeners")
-                elif curve_2_10 < 50:
-                    print("  Signal: Flat curve - consider flatteners")
-                else:
-                    print("  Signal: Neutral curve - no strong trade signal")
-            else:
-                print("Insufficient data for curve analysis")
-        
+                print("  Signal: Normal curve - neutral positioning")
+                
         elif choice == '4':
             print("\nRefreshing market data...")
             market_data = fetch_all_market_data(FRED_API_KEY)
-            create_live_data_visualizations(market_data)
-        
-        else:
-            print("Invalid choice. Exiting interactive mode.")
+            print("Market data updated successfully!")
+            
+    except ValueError as e:
+        print(f"Invalid input: {e}")
     
-    except KeyboardInterrupt:
-        print("\nInteractive mode terminated by user.")
-    except Exception as e:
-        print(f"Error in interactive mode: {e}")
+    # Save market data for later use
+    print("\n" + "=" * 60)
+    print("SAVING MARKET DATA")
+    print("=" * 60)
+    
+    # Create a summary report
+    summary = {
+        'timestamp': market_data.last_updated.isoformat(),
+        'treasury_10y': market_data.risk_free_rate,
+        'ig_spread': market_data.ig_spread,
+        'hy_spread': market_data.hy_spread,
+        'daily_vol': market_data.daily_vol_bp,
+        'treasury_curve': market_data.treasury_curve,
+        'credit_spreads': market_data.credit_spreads
+    }
+    
+    # Save to JSON
+    with open('market_data_snapshot.json', 'w') as f:
+        json.dump(summary, f, indent=2, default=str)
+    
+    print("Market data saved to 'market_data_snapshot.json'")
+    
+    # Display data quality metrics
+    print("\n" + "=" * 60)
+    print("DATA QUALITY METRICS")
+    print("=" * 60)
+    
+    total_series = len(market_data.treasury_curve) + len(market_data.credit_spreads)
+    print(f"Treasury points collected: {len(market_data.treasury_curve)}")
+    print(f"Credit spread series: {len(market_data.credit_spreads)}")
+    print(f"Total data points: {total_series}")
+    
+    if market_data.treasury_curve:
+        min_rate = min(market_data.treasury_curve.values())
+        max_rate = max(market_data.treasury_curve.values())
+        print(f"Treasury range: {min_rate*100:.2f}% - {max_rate*100:.2f}%")
+    
+    print("\n✅ Real-time data integration complete!")
 
 
 if __name__ == "__main__":
-    main()
+    # Check for required packages
+    required_packages = []
+    
+    try:
+        import requests
+    except ImportError:
+        required_packages.append('requests')
+    
+    try:
+        import numpy as np
+    except ImportError:
+        required_packages.append('numpy')
+    
+    try:
+        import pandas as pd
+    except ImportError:
+        required_packages.append('pandas')
+    
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        required_packages.append('matplotlib')
+    
+    if required_packages:
+        print("Missing required packages. Please install:")
+        print(f"pip install {' '.join(required_packages)}")
+        print("\nOptional: pip install yfinance (for ETF data)")
+    else:
+        main()
+        print("  Signal: Normal curve - neutral positioning")
